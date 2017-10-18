@@ -55,4 +55,4 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
 Abra o browser e acesse `http://localhost:8000`, se tudo deu certo você deve ver uma tela parecida com essa:
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-localhost-first-time.png) 
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-localhost-first-time.png) 

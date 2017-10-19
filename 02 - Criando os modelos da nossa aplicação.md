@@ -136,8 +136,147 @@ Importante lembrar que para atualizar o banco de dados devemos:
 * Gerar as migrações com o comando `makemigrations`
 * Aplicar os scripts de migração com o comando `migrate`
 
-## Conhecendo a API do ORM
+## Django ORM - Praticando
 Django fornece um terminal Python interativo para acessar  a Django API. Para iniciar o Shell.
 ```shell
 ~$ ./manage.py shell
+```
+Vamos adicionar alguns dados para que possamos fazer algumas operações e conhecer a API de ORM do Django. Temos que importar a classe `Post` que representa o nosso modelo.
+```python
+from blog.models import Post
+```
+Agora podemos listar todos os posts cadastrados, até o momento ainda não criamos nenhum post.
+```python
+Post.objects.all()
+>>> <QuerySet []>
+```
+Vamos criar um novo registro.
+```python
+post = Post(title='Django os primeiros passos', content='Curso de Django que ensina os conceitos básicos do framework. Nesse curso criamos um blog para fixar o conhecimento.')
+post.save()
+
+post = Post(title='Python os primeiros passos', content='Curso de Python que aborda temas básicos da linguagem, esse curso é a porta de entrada para novos programadores ou programadores experiêntes que estão aprendendo Python.')
+post.save()
+```
+Agora se buscarmos todos os registros o resultado será diferente.
+```python
+Post.objects.all()
+>>> <QuerySet [<Post: Post object>, <Post: Post object>]>
+```
+Recebemos dois objetos como resposta, porém ficou um pouco difícil a olho nu identificar qual é o post que cada objeto está representando. Para resolver esse problema podemos informar ao Django como os objetos devem ser apresentados.
+
+Abra o arquivo `models.py` e adicione o seguinte código:
+```python
+def __str__(self):
+    return self.title
+```
+Seu arquivo deve estar dessa forma agora:
+```python
+from django.db import models
+
+class Post(models.Model)
+    created_at = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+```
+Salve o seu arquivo odels.py`, saia do shell, e abra-o novamente. Importe o modelo de `Post` e então liste todos os objetos da base de dados novamente.
+
+A resposta deve ser algo parecido com:
+```python
+>>> <QuerySet [<Post: Django os primeiros passos>, <Post: Python os primeiros passos>]>
+```
+Na maioria das vezes não queremos listar todos os dados que estão na base, por exemplo: Recuperar todos as postagens com *Python* no título.
+```python
+from blog.models import Post
+
+Post.objects.filter(title__contains='Python')
+>>> <QuerySet [<Post: Python os primeiros passos>]>
+# ou
+Post.objects.filter(title__icontains='pYtHon')
+>>> <QuerySet [<Post: Python os primeiros passos>]>
+```
+Podemos fazer buscas por `id`, no Django podemos fazer essa operação de algumas formas diferentes.
+
+* [manager].get(): Recupera o registro com o `id` informado, caso não seja encontrado uma exception será lançada (`blog.models.DoesNotExist: Post matching query does not exist.`).
+
+* [manager].filter: Assim como `[manager].get` essa função pode ser usada para recuperar um registro com `id` fornecido. Diferentemente de `get`, quando o elemento não é encontrado uma lista vazia é retornada: <QuerySet []>.
+```python
+from django.shortcuts import get_object_or_404
+
+from blog.models import Post
+
+Post.objects.get(id=1)
+>>> <Post: Django os primeiros passos>
+
+Post.objects.filter(id=1)
+>>> <QuerySet [<Post: Django os primeiros passos>]>
+
+Post.objects.get_or_create(id=1)
+>>> (<Post: Django os primeiros passos>, False)
+
+Post.objects.get_or_create(title='Curso de Django Rest Framework - DRF', content='Django Rest Framework é um framework Django feito para desenvolver APIs Rest...')
+>>> (<Post: Curso de Django Rest Framework - DRF>, True)
+
+get_object_or_404(Post, id=1)
+>>> <Post: Django os primeiros passos>
+```
+
+## Teste unitário para Modelos
+Agora que já configuramos nosso banco de dados e criamos nosso modelo, vamos escrever um pequeno teste. Um projeto com uma boa cobertura de testes tende a ter upgrades de funcionalidades de uma forma mais tranquila.
+
+Para garantir uma boa cobertura de testes de código, sempre que adicionar uma nova funcionalidade no modelo lembre-se de escrever um teste para a mesma.
+
+Abra o arquivo `blog/tests.py`, e adicione o código a seguir:
+```python
+from django.test import TestCase
+
+from blog.models import Post
+
+
+class PostTests(models.Model):
+    
+    def test_str(self):
+        post = Post(title='Meu primeiro teste')
+        self.assertEquals(str(post), 'Meu primeiro teste')
+```
+Para rodar o teste execute no terminal:
+```python
+~$ ./manage.py test blog -v 2
+```
+> NOTA: Para rodar todos os testes do projeto:
+> - `./manage.py test`
+> O comando acima roda apenas os testes da APP blog.
+
+A saída será algo como: 
+```python
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Operations to perform:
+  Synchronize unmigrated apps: messages, staticfiles
+  Apply all migrations: admin, auth, blog, contenttypes, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying blog.0001_initial... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_str (blog.tests.PostTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
 ```

@@ -16,7 +16,7 @@ Superuser created successfully.
 ```
 Agora podemos voltar a tela de login e preencher o formulário com as informações do usuário recém criado. Depois de efetuar o login, a tela home do admin será exibida:
 
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-admin-home.png) 
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-admin-home.png) 
 
 Excelente! Podemos editar Grupos e Usuários, mas ainda não conseguimos manipular as postagens. Isso ocorre pois o Django espera que você informe quais *modelos* devem ser exibidos na interface administrativa.
 
@@ -29,7 +29,7 @@ admin.site.register(Post)
 ```
 Recarregue a página da área administrativa, agora foi adicionado um novo link onde podemos gerenciar as postagens.
 
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-admin-post-menu.png)
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-admin-post-menu.png)
 
 Agora podemos fazer alguns testes, criando, editando e excluindo postagens.
 
@@ -52,6 +52,6 @@ admin.site.register(Post, PostAdmin)
 ```
 Você deve ter algo parecido com:
 
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-admin-custom-post-list.png) 
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-admin-custom-post-list.png) 
 
 Existem muitas outras possibilidades que podem serem usadas na área administrativa, para mais detalhes acesso a documentação oficial [The Django admin site](https://docs.djangoproject.com/en/1.11/ref/contrib/admin/#modeladmin-objects).

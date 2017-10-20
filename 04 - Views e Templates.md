@@ -160,7 +160,7 @@ TEMPLATES = [
 ```
 Salve todas as alterações e então acesse [http://localhost:8000/blog/](http://localhost:8000/blog/) e as postagens serão exibidas:
 
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-blog-home.png)
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-blog-home.png)
 
 ## Exibindo a postagem
 É comum na página inicial serem exibidos textos mais curtos, onde é passada uma breve descrição do assunto da postagem. Na grande maioria dos blogs, o usuário pode clicar no título do *post* para ver todo o conteúdo da publicação. Vamos implementar esse comportamento no nosso blog também.
@@ -307,11 +307,11 @@ admin.site.register(Post, PostAdmin)
 ```
 Vamos até o Django Admin e editar as nossas postagens para que a slug seja gerada em cada uma delas. Edite as postagens, quando você clicar no campo de título, automaticamente o Django irá gerar a slug:
 
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-admin-slug-edit.png) 
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-admin-slug-edit.png) 
 
 Agora conseguimos acessar [http://localhost:8000/blog/django-os-primeiros-passos/](http://localhost:8000/blog/django-os-primeiros-passos/).
 
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-post-detail.png)
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-post-detail.png)
 
 O último passo que temos que fazer é transformar os títulos em link, para quando clicarmos nele ser redirecionados para a página da postagem. Abra o *template* `blog/templates/blog/index.html`:
 ```html
@@ -334,4 +334,4 @@ O último passo que temos que fazer é transformar os títulos em link, para qua
 	</section>
 {% endblock %}
 ```
-![](/home/guilherme/Documentos/Projetos/TempoRealEventos/django-os-primeiros-passos/imagens/dj-index-links.png) 
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-index-links.png) 

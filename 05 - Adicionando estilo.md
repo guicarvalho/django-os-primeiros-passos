@@ -139,6 +139,60 @@ div.column.is-8:first-child {
   margin: 1rem 5rem;
 }
 ```
+### Página index
+Vamos alterar o HTML da página `blog/index.html` para adicionar a estrutura do `bulma.io`.
+```html
+{% extends 'base.html' %}
+
+{% block title %} Últimas postagens {% endblock %}
+
+{% block content %}
+	<section class="articles">
+    <div class="column is-8 is-offset-2">
+		
+			<!-- START PROMO BLOCK -->
+	    <section class="hero is-danger is-bold is-small promo-block">
+	      <div class="hero-body">
+	        <div class="container">
+	          <h1 class="title">
+	            <i class="fa fa-bell-o"></i> 
+	             Curso Python para iniciantes
+	          </h1>
+	          <h2 class="subtitle">
+	            Faça já sua matricula e garanta uma vaga no curso, vagas limitadas!
+	          </h2>
+	        </div>
+	      </div>
+	    </section>
+	    <!-- END PROMO BLOCK -->
+			
+      <!-- START ARTICLE -->
+			{% for post in last_posts %}
+			<div class="card article">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-center">
+              <img src="http://www.radfaces.com/images/avatars/baby-sinclair.jpg" class="author-image" alt="Placeholder image">
+            </div>
+            <div class="media-content has-text-centered">
+              <p class="title article-title"><a href="{% url 'post-detail' post.post_slug %}">{{ post.title }}</a></p>
+              <p class="subtitle is-6 article-subtitle">
+                <a href="#">@d</a> {{ post.created_at }}
+              </p>
+            </div>
+          </div>
+
+        	<div class="content article-body">
+	          <p>{{ post.content }}</p>
+        	</div>
+      	</div>
+    	</div>
+    	{% endfor %}
+      <!-- END ARTICLE -->
+		</div>
+	</section>
+{% endblock %}
+```
 Faça todas as modificações e recarregue a página, caso não tenha esquecido de nenhum arquivo seu blog deve estar parecido com a imagem abaixo:
 
 ![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-last-posts-style.png)

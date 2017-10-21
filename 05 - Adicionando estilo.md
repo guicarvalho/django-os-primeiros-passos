@@ -32,16 +32,16 @@ urlpatterns = [
 ```
 Vamos alterar o `base.html` incluindo o bulma em nosso projeto.
 ```html
-{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Blogguinho - {% block title %}{% endblock %}</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  <meta charset="UTF-8">
+  <title>Blogguinho - {% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-	<link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/bulma.min.css' %}">
 	<link rel="stylesheet" href="{% static 'css/blog.css' %}">
 </head>
 <body>
@@ -60,7 +60,7 @@ Vamos alterar o `base.html` incluindo o bulma em nosso projeto.
       </div>
       <div id="navMenu" class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item" href="#">
+          <a class="navbar-item" href="{% url 'index' %}">
             Home
           </a>
           <a class="navbar-item" href="#">
@@ -70,13 +70,14 @@ Vamos alterar o `base.html` incluindo o bulma em nosso projeto.
       </div>
     </nav>
     <!-- END NAV -->
+
 		{% block content %}
 		{% endblock %}
 	</div>
 </body>
 </html>
 ```
-Além do bulma, incluimos também *font-awesome*, a font *Open Sans* e um arquivo *css* chamado `blog.css`. Vamos criar o arquivo `static/css/blog.css`:
+Além do bulma, incluimos também *font-awesome*, a fonte *Open Sans* e um arquivo *css* chamado `blog.css`. Vamos criar o arquivo `static/css/blog.css`:
 ```css
 html,body {
   font-family: 'Open Sans', sans-serif;
@@ -138,3 +139,41 @@ div.column.is-8:first-child {
   margin: 1rem 5rem;
 }
 ```
+Faça todas as modificações e recarregue a página, caso não tenha esquecido de nenhum arquivo seu blog deve estar parecido com a imagem abaixo:
+
+![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-last-posts-style.png)
+
+### Página de detalhes da postagem
+Vamos aplicar o estilo na página que exibe a somente a postagem, abra o arquivo `blog/templates/blog/detail.html` e edite o conteúdo conforme a seguir:
+```html
+{% extends 'base.html' %}
+
+{% block title %} {{ post.title }} {% endblock %}
+
+{% block content %}
+	<section class="articles">
+    <div class="column is-8 is-offset-2">
+    	<div class="card article">
+		    <div class="card-content">
+		      <div class="media">
+		        <div class="media-center">
+		          <img src="http://www.radfaces.com/images/avatars/baby-sinclair.jpg" class="author-image" alt="Placeholder image">
+		        </div>
+		        <div class="media-content has-text-centered">
+		          <p class="title article-title"><a href="{% url 'post-detail' post.post_slug %}">{{ post.title }}</a></p>
+		          <p class="subtitle is-6 article-subtitle">
+		            <a href="#">@d</a> {{ post.created_at }}
+		          </p>
+		        </div>
+		      </div>
+
+		    	<div class="content article-body">
+		        <p>{{ post.content }}</p>
+		    	</div>
+		  	</div>
+			</div>
+    </div>
+  </section>
+{% endblock %}
+```
+Excelente! Com isso finalizamos a customização do nosso blog.

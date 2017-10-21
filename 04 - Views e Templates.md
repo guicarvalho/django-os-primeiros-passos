@@ -59,6 +59,77 @@ urlpatterns = [
 ```
 Agora está tudo pronto, acesse [http://localhost:8000/blog/](http://localhost:8000/blog/), você deve ver a mensagem *Hello World*.
 
+## Criando os testes
+Vamos criar as telas de listagem de postagens e a tela de detalhe da postagem. Antes de implementar a funcionalidade, vamos começar escrevendo um testes simples para ambas. Vamos primeiramente organizar os nossos testes em um repositório e seguimentar por arquivos.
+
+Dentro da pasta da APP, crie uma pasta chamada `tests`. Na pasta `tests` crie dois arquivos `test_models.py e test_views.py`. Vamos iniciar com o arquivo `test_models.py`, o conteúdo é o mesmo que temos no arquivo `blog/tests.py`, inclusive lembre-se de apagar esse arquivo:
+```python
+# blog/tests/test_models.py
+
+from django.test import TestCase
+
+from blog.models import Post
+
+
+class PostTests(TestCase):
+
+    def test_str(self):
+        post = Post(title='Meu primeiro teste')
+        self.assertEquals(str(post), 'Meu primeiro teste')
+```
+Nesse arquivo vamos colocar todos os testes relacionados aos modelos da nossa aplicação.
+
+Agora vamos editar o arquivo `test_views.py`, seu objetivo é centralizar todos os testes de `views` da app.
+```python
+# blog/tests/test_views.py
+from django.test import TestCase
+
+from django.urls import reverse
+
+from blog.models import Post
+
+
+class PostViewTest(TestCase):
+
+    def setUp(self):
+        post1 = Post(title='Post 1', content='Postagem de teste 1.', post_slug='post-1')
+        post2 = Post(title='Post 2', content='Postagem de teste 1.', post_slug='post-2')
+        post3 = Post(title='Post 3', content='Postagem de teste 1.', post_slug='post-3')
+        post4 = Post(title='Post 4', content='Postagem de teste 1.', post_slug='post-4')
+        post5 = Post(title='Post 5', content='Postagem de teste 1.', post_slug='post-5')
+        post6 = Post(title='Post 6', content='Postagem de teste 1.', post_slug='post-6')
+
+        post1.save()
+        post2.save()
+        post3.save()
+        post4.save()
+        post5.save()
+        post6.save()
+
+    def tearDown(self):
+        Post.objects.all().delete()
+
+    def test_index(self):
+        response = self.client.get(reverse('index'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Post 6')
+        self.assertContains(response, 'Post 5')
+        self.assertContains(response, 'Post 4')
+        self.assertContains(response, 'Post 3')
+        self.assertContains(response, 'Post 2')
+        self.assertNotContains(response, 'Post 1')
+
+    def test_detail(self):
+        response = self.client.get(
+            reverse('post-detail', args=('post-1',)))
+
+        post = Post.objects.get(post_slug='post-1')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, post.title)
+```
+
 ## Listando as postagens
 Vamos criar a página *home* do nosso blog, onde vamos exibir os últimos 5 posts publicados. Vamos alterar o código da função `index`:
 ```python
@@ -335,3 +406,58 @@ O último passo que temos que fazer é transformar os títulos em link, para qua
 {% endblock %}
 ```
 ![](https://github.com/guicarvalho/django-os-primeiros-passos/blob/master/imagens/dj-index-links.png) 
+
+### Refatorando os testes do modelo
+Vamos escrever um teste para garantir que a slug não se repita. Adicione o método ao arquivo `blog/tests/test_models.py`
+```python
+def test_unique_slug(self):
+        post = Post(title='Post 1', post_slug='post-1')
+        post.save()
+
+        post = Post(title='Outro post', post_slug='post-1')
+
+        with self.assertRaises(IntegrityError) as ctx:
+            post.save()
+
+        self.assertEqual('UNIQUE constraint failed: blog_post.post_slug',
+                         str(ctx.exception))
+        count = Post.objects.count()
+        self.assertEqual(count, 1)
+```
+Estamos executando nosso teste dentro de uma transação, quando fazemos isso nossa classe de teste deve extender de `TransactionTestCase`. Faça essa alteração também, e não se esqueça do  *import*. Ao final seu arquivo deve estar assim:
+```python
+from django.db.utils import IntegrityError
+
+from django.test import TransactionTestCase
+
+from blog.models import Post
+
+
+class PostTests(TransactionTestCase):
+
+    def test_str(self):
+        post = Post(title='Meu primeiro teste')
+        self.assertEquals(str(post), 'Meu primeiro teste')
+
+    def test_unique_slug(self):
+        post = Post(title='Post 1', post_slug='post-1')
+        post.save()
+
+        post = Post(title='Outro post', post_slug='post-1')
+
+        with self.assertRaises(IntegrityError) as ctx:
+            post.save()
+
+        self.assertEqual('UNIQUE constraint failed: blog_post.post_slug',
+                         str(ctx.exception))
+        count = Post.objects.count()
+        self.assertEqual(count, 1)
+```
+Execute os testes `./manage.py test -v 1`.
+```sh
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.075s
+
+OK
+```

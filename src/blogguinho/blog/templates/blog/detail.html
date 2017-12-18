@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ post.title }} {% endblock %}
+
+{% block content %}
+	<section class="articles">
+    <div class="column is-8 is-offset-2">
+    	<div class="card article">
+		    <div class="card-content">
+		      <div class="media">
+		        <div class="media-center">
+		          <img src="http://www.radfaces.com/images/avatars/baby-sinclair.jpg" class="author-image" alt="Placeholder image">
+		        </div>
+		        <div class="media-content has-text-centered">
+		          <p class="title article-title">{{ post.title }}</p>
+		          <p class="subtitle is-6 article-subtitle">
+		            <a href="#">@d</a> {{ post.created_at }}
+		          </p>
+		        </div>
+		      </div>
+
+		    	<div class="content article-body">
+		        <p>{{ post.content }}</p>
+		    	</div>
+		  	</div>
+			</div>
+		</div>
+    <div class="column is-8 is-offset-2">
+    	<div class="box">
+				<h1 class="title">Deixe seu comentário</h1>
+				<form action="{% url 'post-detail' post.post_slug %}" method="POST">{% csrf_token %}
+					<input type="hidden" id="post_slug" name="post_slug" value="{{ post.post_slug }}">
+	  			{% for field in comment_form %}
+  				<div class="field">
+					  <label class="label">{{ field.label }}</label>
+					  <div class="control">
+					    <input
+					    	class="input" type="text"
+					    	placeholder="{{ field.label }}" 
+					    	maxlength="{{ field.field.max_length }}"
+								id="{{ field.id_for_label }}"
+					    	name="{{ field.html_name }}">
+
+					    	<small style="color:red;">{{field.errors}}</small>
+					 	</div>
+					</div>
+	  			{% endfor %}
+	  			<div class="control">
+					  <input class="button is-primary" type="submit" value="Salvar">
+					</div>
+	    	</form>
+			</div>
+
+			<!-- COMMENTS -->
+			{% for comment in post.comments.all %}
+			<div class="box">
+			  <article>
+			      <div class="content">
+			        <p>
+			          <strong>{{ comment.name }}</strong> <small>({{ comment.email }})</small>
+			          <br>
+			          {{ comment.content }}
+			        </p>
+			      </div>
+			  </article>
+		  </div>
+		  {% endfor %}
+		  <!-- END COMMENTS -->
+    </div>
+  </section>
+{% endblock %}
